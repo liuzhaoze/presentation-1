@@ -1,0 +1,70 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[UTF8, heading]{ctex} % 中文支持
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{svg}          % 插入 svg 矢量图
+\usepackage{tikz}         % 绘图
+\usepackage{subcaption}   % 创建子图
+\usepackage{minted}       % 代码高亮
+\usepackage{algorithm2e}  % 伪代码
+\usepackage{lmodern}      % 消除 warning
+\usepackage{ncepu-beamer} % 应用主题
+
+% 指定 inkscape 路径（inkscape 用于处理 svg 矢量图）
+\setsvg{inkscapeexe={"C:/Program Files/Inkscape/bin/inkscape.com"}}
+% 设置 svg 文字随图片缩放
+\svgsetup{inkscapelatex=false}
+% NOTE: draw.io 中的文本需要关闭自动换行和格式化文本
+
+% 输入信息
+\title{CostAware论文汇报}
+\author{刘肇泽}
+\institute{控制与计算机工程学院}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}[noframenumbering]
+
+    \titlepage
+
+\end{frame}
+
+\begin{frame}{目录}
+
+    \centering
+    \begin{minipage}{0.8\textwidth}
+        \tableofcontents
+    \end{minipage}
+
+\end{frame}
+
+\section{问题背景}
+
+\input{src/background.tex}
+
+\section{数学模型}
+
+\input{src/mathematical_model.tex}
+
+\section{Deep Q-Learning}
+
+\input{src/DQN.tex}
+
+\section{Baseline}
+
+\input{src/baseline.tex}
+
+\setbeamertemplate{sidebar left}{}
+
+\begin{frame}
+
+    \centering
+    \Huge
+    \usefont{OT1}{pzc}{m}{n}
+    Fin.
+
+\end{frame}
+
+\end{document}
