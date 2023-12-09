@@ -1,0 +1,123 @@
+{
+    "results": [
+        {
+            "lambda": 20.0,
+            "job_io_proportion": 0.5,
+            "vm_io_proportion": 0.5,
+            "response_time": {
+                "drl": 0.2624315547796281,
+                "random": 0.7242128888011383,
+                "round_robin": 0.37975493233538615,
+                "earliest": 0.36539743131533053
+            },
+            "cost": {
+                "drl": 231.4631524239283,
+                "random": 391.4433710937439,
+                "round_robin": 381.4662811671262,
+                "earliest": 379.8232144991162
+            }
+        },
+        {
+            "lambda": 10.0,
+            "job_io_proportion": 0.5,
+            "vm_io_proportion": 0.5,
+            "response_time": {
+                "drl": 0.2507825675485885,
+                "random": 0.44494539900218283,
+                "round_robin": 0.35509212883243,
+                "earliest": 0.36081098466485817
+            },
+            "cost": {
+                "drl": 195.09032197496964,
+                "random": 381.82336829077144,
+                "round_robin": 386.4621586189391,
+                "earliest": 341.64320325882284
+            }
+        },
+        {
+            "lambda": 30.0,
+            "job_io_proportion": 0.5,
+            "vm_io_proportion": 0.5,
+            "response_time": {
+                "drl": 0.4022540145004182,
+                "random": 1.7081306360931185,
+                "round_robin": 0.9792713435392181,
+                "earliest": 0.7435264338617901
+            },
+            "cost": {
+                "drl": 315.86967166089227,
+                "random": 392.95626600329336,
+                "round_robin": 386.4413102073026,
+                "earliest": 393.6980612737727
+            }
+        },
+        {
+            "lambda": 20.0,
+            "job_io_proportion": 0.2,
+            "vm_io_proportion": 0.5,
+            "response_time": {
+                "drl": 0.3038955436203215,
+                "random": 0.724284609787015,
+                "round_robin": 0.3838336322066114,
+                "earliest": 0.3681529112665592
+            },
+            "cost": {
+                "drl": 259.71575284354554,
+                "random": 387.9761075429281,
+                "round_robin": 387.79777498237803,
+                "earliest": 382.6042522459935
+            }
+        },
+        {
+            "lambda": 20.0,
+            "job_io_proportion": 0.8,
+            "vm_io_proportion": 0.5,
+            "response_time": {
+                "drl": 0.30214186573806345,
+                "random": 0.651355357257764,
+                "round_robin": 0.4118464804737569,
+                "earliest": 0.33200853911206385
+            },
+            "cost": {
+                "drl": 249.58172723129397,
+                "random": 385.58042137185345,
+                "round_robin": 395.1746754534545,
+                "earliest": 341.62055982770323
+            }
+        },
+        {
+            "lambda": 20.0,
+            "job_io_proportion": 0.5,
+            "vm_io_proportion": 0.2,
+            "response_time": {
+                "drl": 0.32041832163617845,
+                "random": 0.7472458612171772,
+                "round_robin": 0.3900781053563956,
+                "earliest": 0.36603483583658114
+            },
+            "cost": {
+                "drl": 285.59559529690745,
+                "random": 373.10897809767476,
+                "round_robin": 383.82442960843156,
+                "earliest": 378.64466679150013
+            }
+        },
+        {
+            "lambda": 20.0,
+            "job_io_proportion": 0.5,
+            "vm_io_proportion": 0.8,
+            "response_time": {
+                "drl": 0.3311846397181776,
+                "random": 0.8654580501336577,
+                "round_robin": 0.39652450156953994,
+                "earliest": 0.36818054917523857
+            },
+            "cost": {
+                "drl": 283.68376445527315,
+                "random": 383.29425098988156,
+                "round_robin": 392.73214857848103,
+                "earliest": 380.17882874330456
+            }
+        }
+    ]
+}
