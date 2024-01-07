@@ -1,4 +1,4 @@
-\documentclass[aspectratio=169]{beamer}
+\documentclass[aspectratio=169, dvipsnames]{beamer}
 
 \usepackage[UTF8, heading]{ctex} % 中文支持
 \usepackage{color}
@@ -18,7 +18,7 @@
 % NOTE: draw.io 中的文本需要关闭自动换行和格式化文本
 
 % 输入信息
-\title{CostAware论文汇报}
+\title{基于深度强化学习的云计算任务调度算法}
 \author{刘肇泽}
 \institute{控制与计算机工程学院}
 \date{\today}
@@ -40,7 +40,7 @@
 
 \end{frame}
 
-\section{问题背景}
+\section{研究背景}
 
 \input{src/background.tex}
 
@@ -48,15 +48,26 @@
 
 \input{src/mathematical_model.tex}
 
-\section{Deep Q-Learning}
+\section{Deep Q-Learning 与任务调度}
 
-\input{src/DQN.tex}
+\input{src/DQN_task_scheduling.tex}
 
 \section{Baseline}
 
 \input{src/baseline.tex}
 
-\setbeamertemplate{sidebar left}{}
+\section{实验结果}
+
+\input{src/result.tex}
+
+\section{实验总结}
+
+\begin{frame}{实验总结}
+
+    从实验结果中可以看出，DQN 算法在任务调度方面的表现优于基准算法。
+    在不同的环境参数下，DQN 算法都能够学习到合适的策略，使得任务的平均响应时间较短，并且使虚拟机的租金较低。
+
+\end{frame}
 
 \begin{frame}
 

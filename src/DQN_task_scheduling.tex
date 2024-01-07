@@ -1,8 +1,8 @@
 \subsection{DQN结构}
 
 \begin{frame}{Deep Q-Network 结构}
-    代码默认存在 $10$ 台虚拟机，输入状态 $s_t$ 为当前提交任务的类型和 $10$ 台虚拟机的 $T_{idle}$ ：
-    $$s_t = \left[Type,\, T_{idle}^{(1)},\, T_{idle}^{(2)},\, \dots,\, T_{idle}^{(10)}\right]^T$$
+    代码中配置了 $10$ 台虚拟机，输入状态 $s_t$ 为当前提交任务的类型和以及提交到每台虚拟机时需要等待的时间：
+    \[s_t = \left[Type,\, T_{wait}^{(1)},\, T_{wait}^{(2)},\, \dots,\, T_{wait}^{(10)}\right]^T\]
 
     DQN输出在当前状态 $s_t$ 下，对分配到每台虚拟机的总共 $10$ 个动作的评分。
 
@@ -33,7 +33,7 @@
 \subsection{DQN训练方法}
 
 \begin{frame}{Deep Q-Network 训练方法}
-    奖励计算函数：$reward = (1 + e^{\xi - cost}) \cdot \dfrac{T_{exe}}{T_{rep}}$，其中 $\xi$ 为超参数。
+    奖励函数：$reward = (1 + e^{\xi - cost}) \cdot \dfrac{T_{exe}}{T_{rep}}$，其中 $\xi$ 为超参数。
 
     \begin{itemize}
         \item<2-> $\epsilon$-greedy：以 $\epsilon$ 的概率随机决策，以 $1-\epsilon$ 的概率使用DQN决策。随机决策可以探索DQN没有学到的状态，每次学习后减小 $\epsilon$ 。
@@ -44,17 +44,16 @@
 \end{frame}
 
 \begin{frame}{Deep Q-Network 学习流程}
-    确定环境参数和DRL的超参数（代码默认值）：
+    确定环境参数：
 
     \begin{itemize}
         \item 任务：
               \begin{itemize}
                   \item 任务提交速度 $\lambda = 20$
-                  \item 任务类型比例 $\text{CPU} : \text{I/O} = 9 : 1$
-                  \item 任务平均总计算量 $\mu = 200$
+                  \item 任务类型比例 $\text{CPU} : \text{I/O} = 1 : 1$
+                  \item 任务平均总计算量 $\mu = 500$
                   \item 任务总计算量的标准差 $\sigma = 20$
-                  \item 任务提交总数 $8000$
-                  \item 响应时间指标 $QoS = 0.25$
+                  \item 任务提交总数 $500$
               \end{itemize}
         \item 虚拟机：
               \begin{itemize}
@@ -67,17 +66,18 @@
 \end{frame}
 
 \begin{frame}{Deep Q-Network 学习流程}
-    确定环境参数和DRL的超参数（代码默认值）：
+    确定DRL的超参数：
 
     \begin{itemize}
         \item DRL超参数：
               \begin{itemize}
-                  \item $\epsilon$-greedy $\epsilon = 0.9$ ，每次学习后减小 $0.006$
-                  \item replay memory size $N = 800$
-                  \item minibatch size $S = 30$
-                  \item Q-target 网络参数更新间隔 $50$ 步
+                  \item $\epsilon$-greedy $\epsilon = 1.0$ ，每次学习后减小 $0.001$ ，减到 $0.01$ 时不再减小
+                  \item replay memory size $N = 100000$
+                  \item batch size $S = 256$
+                  \item Q-target 网络参数更新间隔 $10$ 步
                   \item 奖励函数超参数 $\xi = 1.5$
-                  \item 学习率 $\gamma = 0.01$
+                  \item 学习率 $\alpha = 0.001$
+                  \item 折扣因子 $\gamma = 0.999$
               \end{itemize}
     \end{itemize}
 \end{frame}
@@ -93,14 +93,14 @@
                 对于状态 $s_t$ 根据 $\epsilon$-greedy 策略得到动作 $a_t$\;
                 执行动作 $a_t$ 后环境变为 $s_{t+1}$ 并得到奖励 $r_t$\;
                 将轨迹 $(s_t, a_t, r_t, s_{t+1})$ 存入replay memory\;
-                \If{Step $>$ 开始学习步数}{
-                    从replay memory中随机抽取 $30$ 个样本作为minibatch\;
-                    \ForEach{sample in minibatch}{
+                \If{replay memory 样本数 $\geqslant$ 256}{
+                    从replay memory中随机抽取 $256$ 个样本作为 batch\;
+                    \ForEach{sample in batch}{
                         将 $s_t$ 传入Q-network得到 $a_t$ 对应的 $Q_{value}$\;
                         将 $s_{t+1}$ 传入target-network得到输出的最大值 $Q_{target}$\;
                         根据损失函数 $Loss = (Q_{value} - (r_t + \gamma \cdot Q_{target}))^2$ 使用梯度下降法更新Q-network\;
                     }
-                    \If{Step \% 50 = 0}{
+                    \If{Step \% 10 = 0}{
                         使用Q-network的参数更新target-network\;
                     }
                     减小 $\epsilon$\;

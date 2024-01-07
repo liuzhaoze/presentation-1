@@ -2,19 +2,25 @@
 
 \begin{frame}{任务属性}
 
-    对于用户提交的每个任务都具有如下属性：
+    \begin{center}
+        \begin{minipage}{0.6\textwidth}
 
-    \begin{itemize}
-        \item $ID$：任务编号
-        \item $reqCom$：总计算量
-        \item $T_{submit}$：提交时刻
-        \item $QoS$：响应时间指标
-        \item $Type$：任务类型
-              \begin{itemize}
-                  \item 计算敏感型
-                  \item I/O敏感型
-              \end{itemize}
-    \end{itemize}
+            对于用户提交的每个任务都具有如下属性：
+
+            \begin{itemize}
+                \item $ID$：任务编号
+                \item $reqCom$：总计算量（服从正态分布）
+                \item $T_{submit}$：提交时刻（泊松过程）
+                \item $Type$：任务类型
+                      \begin{itemize}
+                          \item 计算敏感型——编码为1
+                          \item I/O敏感型——编码为0
+                      \end{itemize}
+            \end{itemize}
+
+        \end{minipage}
+    \end{center}
+
 \end{frame}
 
 \begin{frame}{对任务提交时刻的建模}
@@ -105,16 +111,15 @@
 
             \node[below=2pt] at (1.4,0) {$W_1$};
             \node[below=2pt] at (2.4,0) {$W_2$};
-            \node[below=2pt] at (4.6,0) {$W_3$};
+            \node[below=3pt] at (3.5,0) {$\dots$};
+            \node[below=2pt] at (4.6,0) {$W_{n-1}$};
             \node[below=2pt] at (6.0,0) {$W_n$};
-            \node[below=3pt] at (5.3,0) {$\dots$};
 
             \uncover<2->{
                 \node[above] at (0.7,0) {$T_1$};
                 \node[above] at (1.9,0) {$T_2$};
-                \node[above] at (3.5,0) {$T_3$};
+                \node[above=5pt] at (4,0) {$\dots$};
                 \node[above] at (5.3,0) {$T_n$};
-                \node[above=5pt] at (4.4,0) {$\dots$};
             }
         \end{tikzpicture}
     \end{figure}
@@ -212,30 +217,34 @@
         \end{subfigure}
     \end{figure}
 
-    \uncover<2->{根据无记忆性，$T_2,\dots,T_n$ 均服从参数为 $\lambda$ 的指数分布。}
+    \uncover<2->{以此类推，$T_2,\dots,T_n$ 均服从参数为 $\lambda$ 的指数分布。}
 \end{frame}
 
 \begin{frame}[fragile]{任务提交时间序列和总计算量}
 
     因为 $T_n \sim E(\lambda)$ ，所以代码中对参数为 $\lambda$ 的指数分布进行采样即可得到任务提交的时间间隔。
-    将时间间隔累加，即可得到任务提交的时间序列，对应 $T_{submit}$ 。
+    将时间间隔累加，即可得到任务提交的时间序列，对应 $T_{submit}$ 。总计算量 $reqCom$ 通过正态分布采样。
 
     \scriptsize
     \begin{minted}{python3}
-        # 生成时间间隔
-        intervalT = stats.expon.rvs(scale=1 / lamda, size=self.jobNum)
-        # 对时间间隔累加得到提交时间
-        self.arrival_Times = np.around(intervalT.cumsum(), decimals=3)
+        # 任务提交的时间间隔
+        submit_interval = np.random.exponential(1.0 / self.job_lambda, self.num_jobs)
+        # 任务的总计算量
+        jobs_length = np.random.normal(self.job_len_mean, self.job_len_std, self.num_jobs)
+
+        submit_time = 0
+        for id in range(self.num_jobs):
+            submit_time += submit_interval[id]  # 累加时间间隔得到任务提交的时刻
+            self.workload.append(
+                Job(
+                    id,
+                    0 if np.random.random() < self.job_type_ratio else 1,
+                    submit_time,
+                    jobs_length[id],
+                )
+            )
     \end{minted}
 
-    \normalsize
-    总计算量 $reqCom$ 通过正态分布采样。
-
-    \scriptsize
-    \begin{minted}{python3}
-        self.jobsMI = np.random.normal(self.jobMI, self.jobMI_std, self.jobNum)
-        self.jobsMI = self.jobsMI.astype(int)
-    \end{minted}
 \end{frame}
 
 \subsection{虚拟机模型}
@@ -251,17 +260,17 @@
         \item $T_{idle}$：虚拟机处理完最后一个任务的时刻
         \item $vType$：虚拟机类型
               \begin{itemize}
-                  \item 高性能计算
-                  \item 高性能I/O
+                  \item 高性能计算——编码为1
+                  \item 高性能I/O——编码为0
               \end{itemize}
         \item $vSC$：虚拟机启动开销
         \item $vEC$：虚拟机运行开销
     \end{itemize}
 \end{frame}
 
-\subsection{任务在虚拟机中的运行过程}
+\subsection{任务在虚拟机中的执行过程}
 
-\begin{frame}[shrink=2]{任务在虚拟机中的运行过程}
+\begin{frame}[shrink=2]{任务在虚拟机中的执行过程}
 
     当一个任务在 $T_{submit}$ 时刻提交给一个虚拟机时，可以得到该任务的等待时间：
     $$T_{wait} = \max\{T_{idle} - T_{submit}, 0\}$$
@@ -302,16 +311,20 @@
 
     \uncover<2->{
         当虚拟机开始执行任务时，任务的执行时间：
-        $$T_{exe} = \frac{Type \oplus vType + 1}{2} \cdot \frac{reqCom}{vCom \cdot vAcc}$$
+        \[T_{exe} = \frac{Type \oplus vType + 1}{2} \cdot \frac{reqCom}{vCom \cdot vAcc}\]
     }
+
+    \uncover<3->{
+        任务执行结束后，虚拟机的 $T_{idle}$ 更新为 $T_{submit} + T_{exe}$ 。
+    }
+
 \end{frame}
 
-\begin{frame}{运行结果指标}
+\subsection{优化目标}
+
+\begin{frame}{优化目标}
     \begin{itemize}
         \item 任务响应时间：$T_{rep} = T_{wait} + T_{exe}$
-        \item 是否满足 $QoS$ 要求：$success = \begin{cases}
-                      1, & T_{rep} \leqslant QoS \\ 0,& \text{otherwise}
-                  \end{cases}$
         \item 虚拟机费用：$cost = vSC + vEC \cdot T_{exe}$
     \end{itemize}
 \end{frame}
